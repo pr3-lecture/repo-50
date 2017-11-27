@@ -1,26 +1,32 @@
+;Dimitry Nagorny, 1410351, repo-50
+;Philipp Minges, 1426312, repo-52
+
 ; Aufgabe 1
 ;----------
 
-; (a) Elemente tauschen: Schreiben Sie eine Funktion rotiere, die eine Liste
-; als Argument erhäalt und eine neue Liste zuruckliefert, in der das
+; (a) Elemente tauschen: Schreiben Sie eine Funktion rotiere, die eine Liste 
+; als Argument erhäalt und eine neue Liste zuruckliefert, in der das 
 ; vormals erste Element nun das letzte ist.
 (defun rotiere (arg1)
     (append(rest arg1) (list (first arg1)))
 )
+(print "Rotiere Liste (eins zwei drei vier):")
 (print (rotiere '(eins zwei drei vier)))
 
-; (b) Element einfugen : Schreiben Sie eine Funktion neues-vorletztes ,
-; die eine Liste als Argument erhält und eine neue Liste zuruckliefert,
+; (b) Element einfugen : Schreiben Sie eine Funktion neues-vorletztes , 
+; die eine Liste als Argument erhält und eine neue Liste zuruckliefert, 
 ; in der das vormals erste Element nun das letzte ist.
 (defun abl (list)
     (loop for l on list
         while (rest l)
             collect (first l))
 )
-(defun neues-vorletztes(e l)
+(defun neues-vorletztes(e l) 
     (append (append (abl l) (list e) (last l)))
 )
+(print "Neues Vorletztes 'dreieinhalb zur Liste (eins zwei drei vier):")
 (print (neues-vorletztes 'dreieinhalb '(eins zwei drei vier)))
+
 
 ; (c) Länge einer Liste berechnen: Schreiben Sie eine Funktion my-length
 ; zur Berechnung der Länge einer Liste.
@@ -31,62 +37,66 @@
         )
     )
 )
+(print "Länge der Liste (eins zwei drei vier):")
 (print (my-length '(eins zwei drei vier)))
 
-; (d) Länge einer geschachtelten Liste berechnen: Schreiben Sie eine Funktion
+; (d) Länge einer geschachtelten Liste berechnen: Schreiben Sie eine Funktion 
 ; my-lengthR zur Berechnung der Länge einer Liste und aller eingeschachtelten
 ; Listen.
 (defun my-lengthR (list)
     (cond ((null list) 0) ; länge 0 bei leerer Liste
-        ((listp (car list))
+        ((listp (car list)) 
             (+ (my-lengthR (car list)) (my-lengthR (cdr list))) ; wenn erstes Element eine Liste ist,
             ; addiere das Ergebnis der inneren Liste mit dem Rest
-        )
+        ) 
         (T
             (+ 1 (my-lengthR (cdr list))) ; bei Atom addiere 1 und rekursiv mit dem Rest der Liste
         )
     )
 )
+(print "Verschachtelte Länge der Liste (eins zwei (zwei (zwei drei) eins) drei vier):")
 (print (my-lengthR '(eins zwei (zwei (zwei drei) eins) drei vier)))
 
-; (e) Listen umkehren: Schreiben eine Funktion my-reverse zum Umkehren
+; (e) Listen umkehren: Schreiben eine Funktion my-reverse zum Umkehren 
 ; einer Liste.
 (defun my-reverse (list)
     (cond ((null list) '())
-        (T
+        (T 
             (append
                 (my-reverse (cdr list))
                 (list (car list))
             )
         )
-    )
+	)
 )
+(print "Umdrehen der Liste (eins zwei (zwei (zwei drei) eins) drei vier):")
 (print (my-reverse '(eins zwei (zwei (zwei drei) eins) drei vier)))
 
-; (f) Geschachtelte Listen umkehren: Schreiben eine Funktion my-reverseR
+; (f) Geschachtelte Listen umkehren: Schreiben eine Funktion my-reverseR 
 ; zum Umkehren einer Liste.
 (defun my-reverseR (list)
     (cond ((null list) '()) ; ist list die leere Liste?
         ((listp (car list)) ; wenn das aktuelle Element eine Liste ist
-            (append
-                (my-reverseR (cdr list))
+            (append 
+                (my-reverseR (cdr list)) 
                 (list (my-reverseR (car list)))
             )
         )
         (T ; sonst wie oben
-            (append
-                (my-reverseR (cdr list))
+            (append 
+                (my-reverseR (cdr list)) 
                 (list (car list))
             )
         )
     )
 )
+(print "Verschachteltes Umdrehen der Liste (eins zwei (zwei (zwei drei) eins) drei vier):")
 (print (my-reverseR '(eins zwei (zwei (zwei drei) eins) drei vier)))
 
 ; Aufgabe 2
 ;----------
 
-; (a) Darstellung eines Binärbaums: Überlegen Sie, wie Sie mittels einer Liste
+; (a) Darstellung eines Binärbaums: Überlegen Sie, wie Sie mittels einer Liste 
 ; einen Binärbaum darstellen können.
 
 ; Ein Binärbaum besteht aus einer Menge von Knoten.
@@ -141,19 +151,9 @@
     )
 )
 
-; dolist (var list-form [result-form]) declaration* {tag | statement}*
-; (dolist
-;   (x '(a b c d)) (print x)
-; )
-; Für jedes Element "x" der Liste, wird print ausgeführt. - Ergebnis:
-; A
-; B
-; C
-; D
-
 ; füge Knoten in Baum ein
 (defun tree-insert (node tree)
-    (cond
+    (cond 
         ((null tree) (create-tree-structure node nil nil)) ; wenn der Baum null ist, erzeuge neuen Baum
         ((= node (root tree)) tree) ; gebe ursprünglichen Baum aus, wenn Element bereits vorhanden
         ((< node (root tree)) (create-tree-structure (root tree) (tree-insert node (left-follower tree)) (right-follower tree)))
@@ -164,20 +164,44 @@
 (create-tree '(3 5 8 4 2))
 (print tree)
 
-; (b) Baumtraversierung: Schreiben Sie 3 Funktionen zum Traversieren eines
+; (b) Baumtraversierung: Schreiben Sie 3 Funktionen zum Traversieren eines 
 ; Binärbaums, bei der auch die Knoteninhalte ausgegeben werden.
 
-;inorder
-(defun my-inorder (tree)
-    ()
+; inorder
+(defun inorder (tree)
+    (cond ((null tree))
+        (T 
+            (inorder (left-follower tree))
+            (print (root tree))
+            (inorder (right-follower tree))
+        )
+    )
 )
+(print "Inorder vom Binärbaum (3 5 8 4 2):")
+(inorder tree)
 
-;postorder
-(defun my-inorder (tree)
-    ()
+; postorder - TODO letzte Zahl doppelt
+(defun postorder (tree)
+    (cond ((null tree))
+        (T 
+            (postorder (left-follower tree))
+            (postorder (right-follower tree))
+            (print (root tree))
+        )
+    )
 )
+(print "Postorder vom Binärbaum (3 5 8 4 2):")
+(postorder tree)
 
-;preorder
-(defun my-inorder (tree)
-    ()
+; preoder
+(defun preorder (tree)
+    (cond ((null tree))
+        (T 
+            (print (root tree))
+            (preorder (left-follower tree))
+            (preorder (right-follower tree))
+        )
+    )
 )
+(print "Preorder vom Binärbaum (3 5 8 4 2):")
+(preorder tree)
