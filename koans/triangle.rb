@@ -14,6 +14,7 @@
 #   about_triangle_project_2.rb
 #
 def triangle(a, b, c)
+  raise TriangleError if ((a <= 0 || b <= 0 || c <= 0) || (a+b <= c || a+c <= b || b+c <= a))
   if (a == b && a == c)
     return :equilateral
   else if (a == b || a == c || b == c)
