@@ -37,7 +37,7 @@
         )
     )
 )
-(print "Länge der Liste (eins zwei drei vier):")
+(print "Length der Liste (eins zwei drei vier):")
 (print (my-length '(eins zwei drei vier)))
 
 ; (d) Länge einer geschachtelten Liste berechnen: Schreiben Sie eine Funktion 
@@ -54,7 +54,7 @@
         )
     )
 )
-(print "Verschachtelte Länge der Liste (eins zwei (zwei (zwei drei) eins) drei vier):")
+(print "Verschachtelte Length der Liste (eins zwei (zwei (zwei drei) eins) drei vier):")
 (print (my-lengthR '(eins zwei (zwei (zwei drei) eins) drei vier)))
 
 ; (e) Listen umkehren: Schreiben eine Funktion my-reverse zum Umkehren 
@@ -94,30 +94,6 @@
 (print (my-reverseR '(eins zwei (zwei (zwei drei) eins) drei vier)))
 
 ; Aufgabe 2
-;----------
-
-; (a) Darstellung eines Binärbaums: Überlegen Sie, wie Sie mittels einer Liste 
-; einen Binärbaum darstellen können.
-
-; Ein Binärbaum besteht aus einer Menge von Knoten.
-; Jeder Knoten eines Binärbaums besitzt einen Wert und jeweils zwei Nachfolger.
-; Es gibt einen rechten und linken Nachfolger. Der linke Nachfolger ist immer kleiner, der rechte größer.
-
-; -> ein Binärbaum kann durch geschachtelte Listen dargestellt werden. Jedes Element des Binärbaums besteht aus einer Liste
-; mit 3 Elementen. Dem Wert und der Liste des rechten sowie des linken Nachfolgers.
-
-; Beispiel: (3 5 8 4 2)
-; Baum:      3
-;           / \
-;          2   5
-;             / \
-;            4   8
-
-; [ohne Behebung unausgewogener Bäume]
-
-; Definitionen
-; ------------
-
 ; Baumstruktur = Liste aus drei Elementen
 (defun create-tree-structure (root left right)
     (list root left right)
@@ -259,12 +235,12 @@
 
 ;Ermittelt Anzahl aller Nodes im Baum
 (defun tree-size (tree)
-    (cond ((null tree) 0) ; länge 0 bei leerer Liste
-        ((listp (car tree)) 
-            (+ (tree-size (car tree)) (tree-size (cdr tree))) 
+    (cond ((null tree) 0) ; länge 0 bei leerem Baum
+        ((listp (root tree)) 
+            (+ (tree-size (root tree)) (tree-size (left-follower tree)) (tree-size (right-follower tree))) 
         ) 
         (T
-            (+ 1 (tree-size (cdr tree)))
+            (+ 1 (tree-size (left-follower tree)) (tree-size (right-follower tree)))
         )
     )
 )
@@ -278,7 +254,7 @@
 		(root tree)
 	)
 )
-(print "Grösster Wert im Baum:")
+(print "Biggest Wert im Baum:")
 (print (tree-maxValue tree))
 
 ;Ermittelt kleinsten Wert im Baum
@@ -291,21 +267,7 @@
 (print "Kleinster Wert im Baum:")
 (print (tree-minValue tree))
 
-;Ermittelt Höhe des Baums
-(defun tree-height (tree)
-    ;TODO
-)
-(print "Höhe des Baums:")
-;(print (tree-height tree))
-
-;Entfernt Wert ausm Baum, falls vorhanden
-(defun tree-remove (val tree)
-    ;TODO
-)
-(print "Entferne 3 ausm Baum:")
-;(print (tree-remove 3 tree))
-
-;Entfernt Wert ausm Baum, falls vorhanden
+;Checkt ob der Baum keine Knoten hat
 (defun tree-isEmpty (tree)
     (if (root tree)
 		nil
@@ -317,26 +279,59 @@
 (print "Ist Baum (NIL NIL NIL) leer?")
 (print (if (tree-isEmpty '(NIL NIL NIL)) "Ja." "Nein."))
 
-;Entfernt Wert ausm Baum, falls vorhanden
-(defun tree-addAll (otherTree tree)
-    ;TODO
+;Ermittelt Höhe des Baums
+(defun tree-height (tree)
+	(if (tree-isEmpty tree)
+		0
+		(let ((leftHeight (+ 1 (tree-height (left-follower tree)))))
+			(let ((rightHeight (+ 1 (tree-height (right-follower tree)))))
+				(if (> leftHeight rightHeight)
+					leftHeight
+					rightHeight
+				)
+			)
+		)
+	)
 )
-(print "Füge aktuellem Baum den Baum (3 (2 NIL NIL) (10 NIL NIL)) hinzu:")
-;(print (tree-addAll '(3 (2 NIL NIL) (10 NIL NIL)) tree))
+(print "Height des aktuellen Baumes:")
+(print (tree-height tree))
+(print "Height des Baumes (4 (3 NIL NIL) (5 NIL NIL)):")
+(print (tree-height '(4 (3 NIL NIL) (5 NIL NIL))))
+(print "Height des Baumes (4 (3 (2 NIL NIL) NIL) (5 NIL NIL)):")
+(print (tree-height '(4 (3 (2 NIL NIL) NIL) (5 NIL NIL))))
 
-; levelorder -TODO
+;Entfernt Wert ausm Baum, falls vorhanden
+(defun tree-remove (val tree)
+	(if (tree-containsValue val tree)
+		"removed value" ;TODO
+		"Tree has no such value"
+	)
+)
+(print "Entferne 7 ausm Baum:")
+(print (tree-remove 7 tree))
+(print "Entferne 2 ausm Baum:")
+(print (tree-remove 2 tree))
+
+;Fügt aktuellem tri einen gegebenen Baum otherTree hinzu
+(defun tree-addAll (otherTree tri)
+	(if (not (tree-isEmpty otherTree))
+		(let ((newTree (tree-insertNode (root otherTree) tri)))
+			(let ((newTree2 (tree-addAll (left-follower otherTree) newTree)))
+				(tree-addAll (right-follower otherTree) newTree2)
+			)
+		)
+		tri
+	)
+)
+(print "Adde dem aktuellem Baum den Baum (3 (0 NIL NIL) (11 NIL NIL)) hinzu:")
+(setf tree (tree-addAll '(3 (0 NIL NIL) (11 NIL NIL)) tree))
+(print tree)
+
+;levelorder
 (defun levelorder (tree)
-	;TODO
-    (cond ((null tree))
-        (T 
-            (print (root tree))
-            (levelorder (left-follower tree))
-            (levelorder (right-follower tree))
-        )
-    )
+	;TODO Scheiß Arbeit...
 )
 (print "Levelorder vom aktuellen Baum:")
 (levelorder tree)
-    
     
 (setf tree '())
