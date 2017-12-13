@@ -303,14 +303,51 @@
 ;Entfernt Wert ausm Baum, falls vorhanden
 (defun tree-remove (val tree)
 	(if (tree-containsValue val tree)
-		"removed value" ;TODO
-		"Tree has no such value"
+		(cond
+			((null (root tree)) nil)
+			((and (= val (root tree)) (= (tree-height tree) 1)) nil)
+			((and (= val (root tree)) (null (right-follower tree)))
+				(create-tree-structure 
+					(tree-maxValue (left-follower tree)) 
+					(tree-remove (tree-maxValue (left-follower tree)) (left-follower tree))
+					nil
+				)
+			)
+			(
+				(= val (root tree))
+				(create-tree-structure 
+					(tree-minValue (right-follower tree)) 
+					(left-follower tree) 
+					(tree-remove (tree-minValue (right-follower tree)) (right-follower tree))
+				)
+			)
+			(
+			(< val (root tree))
+				(create-tree-structure (root tree) (tree-remove val (left-follower tree)) (right-follower tree))
+			)
+			(
+			(> val (root tree))
+				(create-tree-structure (root tree) (left-follower tree) (tree-remove val (right-follower tree)))
+			)
+		)
+		tree
 	)
 )
-(print "Entferne 7 ausm Baum:")
+;Entferne nicht vorhandenen Wert
+(print "Entferne 7 aus dem Baum:")
 (print (tree-remove 7 tree))
-(print "Entferne 2 ausm Baum:")
+;Entferne Wert mit rechts nil und links vorhanden
+(print "Entferne 2 aus dem Baum:")
 (print (tree-remove 2 tree))
+;Entferne Wert mit beide teilbäume nil
+(print "Entferne 1 aus dem Baum:")
+(print (tree-remove 1 tree))
+;Entferne Wert mit links nil rechts vorhanden
+(print "Entferne 8 aus dem Baum:")
+(print (tree-remove 8 tree))
+;Entferne Wert der root ist und beide teilbäume vorhanden
+(print "Entferne 3 aus dem Baum:")
+(print (tree-remove 3 tree))
 
 ;Fügt aktuellem tri einen gegebenen Baum otherTree hinzu
 (defun tree-addAll (otherTree tri)
@@ -327,11 +364,30 @@
 (setf tree (tree-addAll '(3 (0 NIL NIL) (11 NIL NIL)) tree))
 (print tree)
 
-;levelorder
+; levelorder
+; Helper for levelorder
+(defun curLevel(cur tree)
+    (if (endp tree) nil
+        (if (= 1 cur) 
+            (list (car tree))
+            (append 
+                (curLevel (- cur 1)(cadr tree)) 
+                (curLevel (- cur 1)(caddr tree))
+            )
+        )
+    )
+)
+; print levelorder - iterativ :(
 (defun levelorder (tree)
-	;TODO Scheiß Arbeit...
+    (setq res nil)
+    (loop for i from 1 to (tree-height tree)
+        do (
+			setq res (append res (curLevel i tree))
+        )
+  )
+  res
 )
 (print "Levelorder vom aktuellen Baum:")
-(levelorder tree)
+(print (levelorder tree))
     
 (setf tree '())
