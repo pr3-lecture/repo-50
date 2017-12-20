@@ -1,1 +1,4 @@
 output/
+*.db
+*.opendb
+crypter/.vs

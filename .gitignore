@@ -1,2 +1,4 @@
 **/bin/
 eclipse-workspace/
+*.fas
+ueb1_2.lib
