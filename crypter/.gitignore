@@ -1,4 +1,6 @@
 output/
 *.db
 *.opendb
-crypter/.vs
+crypter/.vs/*
+crypter/Debug/*
+crypter/x64/*
