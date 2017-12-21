@@ -13,11 +13,19 @@ static char* encryptTest() {
 	char input[6] = "HALLO";
 	char output[6] = "";
 	int result = encrypt(key, input, output);
-	mu_assert("Encryption failed!", output == "TOOXA");
+	mu_assert("Encryption failed!", result == 0);
+	mu_assert("Encryption doesn't contain correct string!", 
+		(strcmp(output, "TOOXA") == 0));
 }
 
 static char* decryptTest() {
-	mu_assert("Decryption failed!", 1 == 1);
+	KEY key = { .type = 1, .chars = "TPE" };
+	char cipher[6] = "TOOXA";
+	char output[6] = "";
+	int result = decrypt(key, cipher, output);
+	mu_assert("Decryption failed!", result == 0);
+	mu_assert("Decryption doesn't contain correct string!",
+		(strcmp(output, "HALLO") == 0));
 }
 
 static char* factoryTest() {
