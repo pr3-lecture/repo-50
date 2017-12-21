@@ -18,9 +18,9 @@ char decryptChar(char in, char key) {
 	return MESSAGE_CHARACTERS[getPositionForChar(CYPHER_CHARACTERS, in) ^ getPositionForKey(key)];
 }
 
-int checkString(char* allowedChars, char* checkChars) {
-	int checkingLength = strlen(checkChars);
-	for (int i = 0; i < checkingLength; i++) {
+int checkString(char* allowedChars, const char* checkChars) {
+	size_t checkingLength = strlen(checkChars);
+	for (size_t i = 0; i < checkingLength; i++) {
 		if (getPositionForChar(allowedChars, checkChars[i]) < 0) {
 			return -1;
 		}
@@ -36,7 +36,7 @@ int loopForResult(char* key, const char* looper, char* result, size_t keyLength,
 	return 0;
 }
 
-int preConditionCheck(KEY key, char* validPool, char* toBeChecked) {
+int preConditionCheck(KEY key, char* validPool, const char* toBeChecked) {
 	if (strlen(key.chars) < 1) {
 		fprintf(stderr, "Invalid key length!\n");
 		return E_KEY_TOO_SHORT;

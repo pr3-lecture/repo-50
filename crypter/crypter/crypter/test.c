@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "crypto.h"
+#include "factory.h"
 
 int tests_run = 0;
 
@@ -15,8 +16,6 @@ static char* encryptTest() {
 	int result = encrypt(key, input, output);
 	mu_assert("Encryption failed!", result == 0);
 	mu_assert("Encryption doesn't contain correct string!", (strcmp(output, "TOOXA") == 0));
-
-	free(input); free(output);
 }
 
 static char* decryptTest() {
@@ -26,8 +25,6 @@ static char* decryptTest() {
 	int result = decrypt(key, cipher, output);
 	mu_assert("Decryption failed!", result == 0);
 	mu_assert("Decryption doesn't contain correct string!", (strcmp(output, "HALLO") == 0));
-
-	free(cipher); free(output);
 }
 
 static char* factoryTest() {
@@ -58,8 +55,6 @@ static char* errorTest() {
 	char wrongCiphertext[6] = "TO0XA";
 	result = decrypt(key, wrongCiphertext, output);
 	mu_assert("No Error occured, but expected!", result == E_CYPHER_ILLEGAL_CHAR);
-
-	free(validInput); free(output); free(wrongInput); free(wrongCiphertext);
 }
 
 static char* allTests() {

@@ -111,11 +111,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="crypto.h" />
+    <ClInclude Include="factory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="crypto.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="test.c" />
+    <ClCompile Include="factory.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
