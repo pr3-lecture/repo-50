@@ -349,6 +349,8 @@
 (print "Entferne 3 aus dem Baum:")
 (print (tree-remove 3 tree))
 
+(print (tree-remove 3 '(3 (2 (1 NIL NIL) NIL) (8 (4 NIL (6 (5 NIL NIL) NIL)) (10 NIL (20 NIL (30 NIL NIL)))))))
+
 ;Fügt aktuellem tri einen gegebenen Baum otherTree hinzu
 (defun tree-addAll (otherTree tri)
 	(if (not (tree-isEmpty otherTree))

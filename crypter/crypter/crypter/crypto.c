@@ -6,32 +6,16 @@ int getPositionForChar(char* searchPool, char searchedChar) {
 	return (int) (strchr(searchPool, searchedChar) - searchPool);
 }
 
-int getPositionForMessage(char searchedChar) {
-	return getPositionForChar(MESSAGE_CHARACTERS, searchedChar);
-}
-
 int getPositionForKey(char searchedChar) {
 	return getPositionForChar(KEY_CHARACTERS, searchedChar);
 }
 
-int getPositionForCipher(char searchedChar) {
-	return getPositionForChar(CYPHER_CHARACTERS, searchedChar);
-}
-
-char getEncryptedChar(int searchedPosition) {
-	return CYPHER_CHARACTERS[searchedPosition];
-}
-
-char getDecryptedChar(int searchedPosition) {
-	return MESSAGE_CHARACTERS[searchedPosition];
-}
-
 char encryptChar(char in, char key) {
-	return getEncryptedChar(getPositionForMessage(in) ^ getPositionForKey(key));
+	return CYPHER_CHARACTERS[getPositionForChar(MESSAGE_CHARACTERS, in) ^ getPositionForKey(key)];
 }
 
 char decryptChar(char in, char key) {
-	return getDecryptedChar(getPositionForCipher(in) ^ getPositionForKey(key));
+	return MESSAGE_CHARACTERS[getPositionForChar(CYPHER_CHARACTERS, in) ^ getPositionForKey(key)];
 }
 
 int checkString(char* allowedChars, char* checkChars) {
@@ -44,48 +28,39 @@ int checkString(char* allowedChars, char* checkChars) {
 	return 0;
 }
 
-int encrypt(KEY key, const char * input, char * output) {
-	if (checkString(KEY_CHARACTERS, key.chars) < 0) {
-		fprintf(stderr, "Invalid key!\n");
-		return -1;
-	}
-	else if (checkString(MESSAGE_CHARACTERS, input) < 0) {
-		fprintf(stderr, "Invalid message!\n");
-		return -1;
-	}
-	else if (key.type != 1) {
-		fprintf(stderr, "Invalid encryption type!\n");
-		return -1;
-	}
-
-	int keyLength = strlen(key.chars);
-	int inputLength = strlen(input);
-	for (size_t i = 0; i < inputLength; i++) {
-		output[i] = encryptChar(input[i], key.chars[i%keyLength]);
-		output[i + 1] = '\0';
+int loopForResult(char* key, const char* looper, char* result, size_t keyLength, size_t loopLength, char (*function)(char, char)) {
+	for (size_t i = 0; i < loopLength; i++) {
+		result[i] = function(looper[i], key[i%keyLength]);
+		result[i + 1] = '\0';
 	}
 	return 0;
 }
 
-int decrypt(KEY key, const char * cypherText, char * output) {
-	if (checkString(KEY_CHARACTERS, key.chars) < 0) {
-		fprintf(stderr, "Invalid key!\n");
-		return -1;
-	}
-	else if (checkString(CYPHER_CHARACTERS, cypherText) < 0) {
-		fprintf(stderr, "Invalid message!\n");
-		return -1;
+int preConditionCheck(KEY key, char* validPool, char* toBeChecked) {
+	if (strlen(key.chars) < 1) {
+		fprintf(stderr, "Invalid key length!\n");
+		return E_KEY_TOO_SHORT;
+	} else if (checkString(KEY_CHARACTERS, key.chars) < 0) {
+		fprintf(stderr, "Invalid key characters!\n");
+		return E_KEY_ILLEGAL_CHAR;
 	}
 	else if (key.type != 1) {
 		fprintf(stderr, "Invalid encryption type!\n");
 		return -1;
 	}
-
-	int keyLength = strlen(key.chars);
-	int cypherLength = strlen(cypherText);
-	for (size_t i = 0; i < cypherLength; i++) {
-		output[i] = decryptChar(cypherText[i], key.chars[i%keyLength]);
-		output[i + 1] = '\0';
+	else if (checkString(validPool, toBeChecked) < 0) {
+		fprintf(stderr, "Invalid message or cipheredText!\n");
+		return validPool == MESSAGE_CHARACTERS ? E_MESSAGE_ILLEGAL_CHAR : E_CYPHER_ILLEGAL_CHAR;
 	}
 	return 0;
+}
+
+int encrypt(KEY key, const char* input, char* output) {
+	int condition = preConditionCheck(key, MESSAGE_CHARACTERS, input);
+	return (condition != 0) ? condition : loopForResult(key.chars, input, output, strlen(key.chars), strlen(input), &encryptChar);
+}
+
+int decrypt(KEY key, const char * cypherText, char * output) {
+	int condition = preConditionCheck(key, CYPHER_CHARACTERS, cypherText);
+	return (condition != 0) ? condition : loopForResult(key.chars, cypherText, output, strlen(key.chars), strlen(cypherText), &decryptChar);
 }

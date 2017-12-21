@@ -14,8 +14,9 @@ static char* encryptTest() {
 	char output[6] = "";
 	int result = encrypt(key, input, output);
 	mu_assert("Encryption failed!", result == 0);
-	mu_assert("Encryption doesn't contain correct string!", 
-		(strcmp(output, "TOOXA") == 0));
+	mu_assert("Encryption doesn't contain correct string!", (strcmp(output, "TOOXA") == 0));
+
+	free(input); free(output);
 }
 
 static char* decryptTest() {
@@ -24,8 +25,9 @@ static char* decryptTest() {
 	char output[6] = "";
 	int result = decrypt(key, cipher, output);
 	mu_assert("Decryption failed!", result == 0);
-	mu_assert("Decryption doesn't contain correct string!",
-		(strcmp(output, "HALLO") == 0));
+	mu_assert("Decryption doesn't contain correct string!", (strcmp(output, "HALLO") == 0));
+
+	free(cipher); free(output);
 }
 
 static char* factoryTest() {
@@ -33,14 +35,38 @@ static char* factoryTest() {
 }
 
 static char* errorTest() {
-	mu_assert("No Error occured, but expected!", 1 == 1);
+	KEY key = { .type = 2, .chars = "TPE" };
+	char validInput[6] = "HALLO";
+	char output[6] = "";
+	int result = encrypt(key, validInput, output);
+	mu_assert("No Error occured, but expected!", result == -1);
+
+	key.type = 1;
+	key.chars = "TP1E";
+	result = encrypt(key, validInput, output);
+	mu_assert("No Error occured, but expected!", result == E_KEY_ILLEGAL_CHAR);
+
+	key.chars = "";
+	result = encrypt(key, validInput, output);
+	mu_assert("No Error occured, but expected!", result == E_KEY_TOO_SHORT);
+
+	key.chars = "TPE";
+	char wrongInput[6] = "HA1LLO";
+	result = encrypt(key, wrongInput, output);
+	mu_assert("No Error occured, but expected!", result == E_MESSAGE_ILLEGAL_CHAR);
+
+	char wrongCiphertext[6] = "TO0XA";
+	result = decrypt(key, wrongCiphertext, output);
+	mu_assert("No Error occured, but expected!", result == E_CYPHER_ILLEGAL_CHAR);
+
+	free(validInput); free(output); free(wrongInput); free(wrongCiphertext);
 }
 
 static char* allTests() {
 	mu_run_test(encryptTest);
 	mu_run_test(decryptTest);
-	mu_run_test(factoryTest);
 	mu_run_test(errorTest);
+	mu_run_test(factoryTest);
 	return 0;
 }
 
